@@ -16,42 +16,41 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.ViewModelProvider
 import com.example.app_wifi.ui.screens.PermissionScreen
 import com.example.app_wifi.ui.screens.WiFiListScreen
 import com.example.app_wifi.ui.theme.AppwifiTheme
 import com.example.app_wifi.viewmodel.WiFiViewModel
 
 class MainActivity : ComponentActivity() {
+
+    private lateinit var wifiViewModel: WiFiViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Crear ViewModel usando ViewModelProvider
+        wifiViewModel = ViewModelProvider(this)[WiFiViewModel::class.java]
+
         enableEdgeToEdge()
         setContent {
             AppwifiTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
-                    WiFiScannerApp()
+                    WiFiScannerApp(viewModel = wifiViewModel)
                 }
             }
         }
-    }
-
-    /**
-     * Verifica si los permisos de ubicación están concedidos
-     */
-    private fun hasLocationPermission(): Boolean {
-        return ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
     }
 }
 
 @Composable
 fun WiFiScannerApp(
-    viewModel: WiFiViewModel = viewModel()
+    viewModel: WiFiViewModel
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
     // Launcher para solicitar permisos
     val permissionLauncher = rememberLauncherForActivityResult(
@@ -75,10 +74,7 @@ fun WiFiScannerApp(
 
         // Verificar si ya tenemos permisos
         val hasPermission = permissions.any { permission ->
-            ContextCompat.checkSelfPermission(
-                viewModel.getApplication(),
-                permission
-            ) == PackageManager.PERMISSION_GRANTED
+            ContextCompat.checkSelfPermission(context, permission) == PackageManager.PERMISSION_GRANTED
         }
 
         if (hasPermission) {
