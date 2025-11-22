@@ -85,34 +85,6 @@ private fun SignalBar(
     )
 }
 
-/**
- * Versión con icono WiFi que cambia según la intensidad
- */
-@Composable
-fun SignalStrengthIcon(
-    signalLevel: Int,
-    modifier: Modifier = Modifier
-) {
-    val color = when {
-        signalLevel >= 75 -> Color(0xFF4CAF50)
-        signalLevel >= 50 -> Color(0xFF8BC34A)
-        signalLevel >= 25 -> Color(0xFFFFC107)
-        else -> Color(0xFFF44336)
-    }
-
-    androidx.compose.material3.Icon(
-        imageVector = when {
-            signalLevel >= 75 -> androidx.compose.material.icons.Icons.Default.NetworkWifi
-            signalLevel >= 50 -> androidx.compose.material.icons.Icons.Default.NetworkWifi3Bar
-            signalLevel >= 25 -> androidx.compose.material.icons.Icons.Default.NetworkWifi2Bar
-            else -> androidx.compose.material.icons.Icons.Default.NetworkWifi1Bar
-        },
-        contentDescription = "Intensidad de señal: $signalLevel%",
-        tint = color,
-        modifier = modifier
-    )
-}
-
 @Preview(showBackground = true)
 @Composable
 private fun SignalStrengthBarPreview() {
